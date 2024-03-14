@@ -61,7 +61,7 @@ guard let unwrapped = myVar else {
  Daha önceki printSquare() fonksiyonuna bakarsanız bu iki noktayı da iş başında görebilirsiniz:
 */
 
-func printSquare2(of number: Int?) {
+func printSquare2(_ input: Int?) {
     guard let number = number else {
         print("Missing input")
 
