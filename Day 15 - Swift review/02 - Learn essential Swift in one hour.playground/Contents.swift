@@ -940,3 +940,317 @@ class Developer2: Employee3 {
 }
 
 /// The second difference is that initializers are more tricky with classes. There’s a lot of complexity here, but there are three key points:
+/// İkinci fark, başlatıcıların sınıflarda daha zor olmasıdır. Burada çok fazla karmaşıklık vardır, ancak üç önemli nokta vardır:
+
+/// - Swift won’t generate a memberwise initializer for classes.
+/// - Swift, sınıflar için üye bazında bir ilklendirici oluşturmaz.
+
+/// - If a child class has custom initializers, it must always call the parent’s initializer after it has finished setting up its own properties.
+/// - Bir alt sınıfın özel başlatıcıları varsa, kendi özelliklerini ayarlamayı bitirdikten sonra her zaman ebeveynin başlatıcısını çağırmalıdır.
+
+/// - If a subclass doesn’t have any initializers, it automatically inherits the initializers of its parent class.
+/// - Bir alt sınıfın herhangi bir başlatıcısı yoksa, otomatik olarak ana sınıfının başlatıcılarını miras alır.
+
+class Vehicle {
+    let isElectric: Bool
+
+    init(isElectric: Bool) {
+        self.isElectric = isElectric
+    }
+}
+
+class Car: Vehicle {
+    let isConvertible: Bool
+
+    init(isElectric: Bool, isConvertible: Bool) {
+        self.isConvertible = isConvertible
+        super.init(isElectric: isElectric)
+    }
+}
+
+/// super allows us to call up to methods that belong to our parent class, such as its initializer.
+/// super, başlatıcı gibi ana sınıfımıza ait yöntemleri çağırmamıza olanak tanır.
+
+/// The third difference is that all copies of a class instance share their data, meaning that changes you make to one will automatically change other copies.
+/// Üçüncü fark, bir sınıf örneğinin tüm kopyalarının verilerini paylaşmasıdır; yani birinde yaptığınız değişiklikler otomatik olarak diğer kopyaları da değiştirecektir.
+
+class Singer {
+    var name = "Adele"
+}
+
+var singer1 = Singer()
+var singer2 = singer1
+singer2.name = "Justin"
+print(singer1.name)
+print(singer2.name)
+
+/// That will print “Justin” for both – even though we only changed one of them, the other also changed. In comparison, struct copies don’t share their data.
+/// Bu, her ikisi için de "Justin" yazdıracaktır - sadece birini değiştirmiş olsak bile, diğeri de değişmiştir. Buna karşılık, struct kopyalar verilerini paylaşmaz.
+
+/// The fourth difference is that classes can have a deinitializer that gets called when the last reference to an object is destroyed.
+/// Dördüncü fark, sınıfların bir nesneye yapılan son referans yok edildiğinde çağrılan bir deinitializer'a sahip olabilmesidir.
+
+/// So, we could create a class that prints a message when it’s created and destroyed:
+/// Böylece, oluşturulduğunda ve yok edildiğinde bir mesaj yazdıran bir sınıf oluşturabiliriz:
+
+class User {
+    let id: Int
+
+    init(id: Int) {
+        self.id = id
+        print("User \(id): I'm alive!")
+    }
+
+    deinit {
+        print("User \(id): I'm dead!")
+    }
+}
+
+for i in 1...3 {
+    let user = User(id: i)
+    print("User \(user.id): I'm in control!")
+}
+
+/// The final difference is that classes let us change variable properties even when the class itself is constant:
+/// Son fark ise sınıfların, sınıfın kendisi sabit olsa bile değişken özelliklerini değiştirmemize izin vermesidir:
+
+class User2 {
+    var name = "Paul"
+}
+
+let user5 = User2()
+user5.name = "Taylor"
+print(user5.name)
+
+/// As a result of this, classes don’t need the mutating keyword with methods that change their data.
+/// Bunun sonucu olarak, sınıflar verilerini değiştiren yöntemlerde mutating anahtar sözcüğüne ihtiyaç duymazlar.
+
+
+// ****************************************************************************
+
+
+/// # Protocols
+
+/// Protocols define functionality we expect a data type to support, and Swift ensures our code follows those rules.
+/// Protokoller, bir veri türünün desteklemesini beklediğimiz işlevselliği tanımlar ve Swift, kodumuzun bu kurallara uymasını sağlar.
+
+/// For example, we could define a Vehicle protocol like this:
+/// Örneğin, aşağıdaki gibi bir Araç protokolü tanımlayabiliriz:
+
+protocol Vehicle2 {
+    func estimateTime(for distance: Int) -> Int
+    func travel(distance: Int)
+}
+
+/// That lists the required methods for this protocol to work, but doesn’t contain any code – we’re specifying only method names, parameters, and return types.
+/// Bu protokolün çalışması için gerekli yöntemleri listeler, ancak herhangi bir kod içermez - yalnızca yöntem adlarını, parametreleri ve dönüş türlerini belirtiriz.
+
+/// Once you have a protocol you can make data types conform to it by implementing the required functionality. For example, we could make a Car struct that conforms to Vehicle:
+/// Bir protokole sahip olduğunuzda, gerekli işlevselliği uygulayarak veri türlerinin buna uygun olmasını sağlayabilirsiniz. Örneğin, Vehicle ile uyumlu bir Car struct'ı yapabiliriz:
+
+struct Car2: Vehicle2 {
+    func estimateTime(for distance: Int) -> Int {
+        distance / 50
+    }
+
+    func travel(distance: Int) {
+        print("I'm driving \(distance)km.")
+    }
+}
+
+/// All the methods listed in Vehicle must exist exactly in Car, with the same name, parameters, and return types.
+/// Vehicle içinde listelenen tüm yöntemler, aynı ad, parametreler ve dönüş türleriyle Car içinde tam olarak bulunmalıdır.
+
+/// Now you can write a function that accepts any kind of type that conforms to Vehicle, because Swift knows it implements both estimateTime() and travel():
+/// Artık Vehicle'a uyan her türlü türü kabul eden bir fonksiyon yazabilirsiniz, çünkü Swift hem estimateTime() hem de travel()'ı uyguladığını bilir:
+
+func commute(distance: Int, using vehicle: Vehicle2) {
+    if vehicle.estimateTime(for: distance) > 100 {
+        print("Too slow!")
+    } else {
+        vehicle.travel(distance: distance)
+    }
+}
+
+/// Protocols can also require properties, so we could require properties for how many seats vehicles have and how many passengers they currently have:
+/// Protokoller ayrıca özellikler de gerektirebilir, bu nedenle araçların kaç koltuğu olduğu ve şu anda kaç yolcusu olduğu gibi özellikler isteyebiliriz:
+
+protocol Vehicle3 {
+    var name: String { get }
+    var currentPassengers: Int { get set }
+    func estimateTime(for distance: Int) -> Int
+    func travel(distance: Int)
+}
+
+/// That adds two properties: one marked with get that might be a constant or computed property, and one marked with get set that might be a variable or a computed property with a getter and setter.
+/// Bu iki özellik ekler: biri get ile işaretlenmiş sabit veya hesaplanmış bir özellik olabilir ve diğeri get set ile işaretlenmiş değişken veya getter ve setter ile hesaplanmış bir özellik olabilir.
+
+/// Now all conforming types must add implementations of those two properties, like this for Car:
+/// Artık tüm uyumlu tipler bu iki özelliğin uygulamalarını eklemelidir, örneğin Car için bu şekilde:
+
+struct Car3: Vehicle3 {
+    let name = "Car"
+    var currentPassengers = 1
+    
+    func estimateTime(for distance: Int) -> Int {
+        distance / 50
+    }
+
+    func travel(distance: Int) {
+        print("I'm driving \(distance)km.")
+    }
+}
+
+/// Tip: You can conform to as many protocols as you need, just by listing them separated with a comma.
+/// İpucu: Sadece virgülle ayırıp listeleyerek istediğiniz kadar protokole uyabilirsiniz.
+
+
+// ****************************************************************************
+
+
+/// # Extensions
+
+/// Extensions let us add functionality to any type. For example, Swift’s strings have a method for trimming whitespace and new lines, but it’s quite long so we could turn it into an extension:
+/// Uzantılar, herhangi bir türe işlevsellik eklememizi sağlar. Örneğin, Swift'in string'lerinin boşlukları ve yeni satırları kırpmak için bir yöntemi vardır, ancak oldukça uzundur, bu yüzden bunu bir uzantıya dönüştürebiliriz:
+
+extension String {
+    func trimmed() -> String {
+        self.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+
+var quote2 = "   The truth is rarely pure and never simple   "
+let trimmed = quote.trimmed()
+
+/// If you want to change a value directly rather than returning a new value, mark your method as mutating like this:
+/// Yeni bir değer döndürmek yerine bir değeri doğrudan değiştirmek istiyorsanız, yönteminizi şu şekilde mutasyon olarak işaretleyin:
+
+extension String {
+    mutating func trim() {
+        self = self.trimmed()
+    }
+}
+
+quote2.trim()
+
+/// Extensions can also add computed properties to types, like this one:
+/// Uzantılar, türlere bunun gibi hesaplanmış özellikler de ekleyebilir:
+
+extension String {
+    var lines: [String] {
+        self.components(separatedBy: .newlines)
+    }
+}
+
+/// The components(separatedBy:) method splits a string into an array of strings using a boundary of our choosing, which in this case is new lines.
+/// components(separatedBy:) yöntemi, bir dizeyi, bizim seçtiğimiz bir sınırı (bu durumda yeni satırlar) kullanarak bir dizi dizeye böler.
+
+/// We can now use that property with all strings:
+/// Artık bu özelliği tüm dizelerle kullanabiliriz:
+
+let lyrics = """
+But I keep cruising
+Can't stop, won't stop moving
+"""
+
+print(lyrics.lines.count)
+
+
+// ****************************************************************************
+
+
+/// # Protocol extensions
+
+/// Protocol extensions extend a whole protocol to add computed properties and method implementations, so any types conforming to that protocol get them.
+/// Protokol uzantıları, hesaplanan özellikleri ve metoduygulamalarını eklemek için tüm bir protokolü genişletir, böylece bu protokole uyan tüm türler bunları alır.
+
+/// For example, Array, Dictionary, and Set all conform to the Collection protocol, so we can add a computed property to all three of them like this:
+/// Örneğin, Array, Dictionary ve Set'in tümü Collection protokolüne uygundur, bu nedenle üçüne de aşağıdaki gibi hesaplanmış bir özellik ekleyebiliriz:
+
+extension Collection {
+    var isNotEmpty: Bool {
+        isEmpty == false
+    }
+}
+
+/// Now we can put it to use:
+/// Şimdi bunu kullanabiliriz:
+
+let guests = ["Mario", "Luigi", "Peach"]
+
+if guests.isNotEmpty {
+    print("Guest count: \(guests.count)")
+}
+
+/// This approach means we can list required methods in a protocol, then add default implementations of those inside a protocol extension. All conforming types then get to use those default implementations, or provide their own as needed.
+/// Bu yaklaşım, bir protokolde gerekli yöntemleri listeleyebileceğimiz ve ardından bunların varsayılan uygulamalarını bir protokol uzantısı içine ekleyebileceğimiz anlamına gelir. Tüm uyumlu tipler daha sonra bu varsayılan uygulamaları kullanabilir veya gerektiğinde kendi uygulamalarını sağlayabilir.
+
+
+// ****************************************************************************
+
+
+/// # Optionals
+
+/// Optionals represent the absence of data – for example, they distinguish between an integer having the value 0, and having no value at all.
+/// Optional'lar veri yokluğunu temsil eder - örneğin, 0 değerine sahip bir tamsayı ile hiçbir değere sahip olmayan bir tamsayı arasında ayrım yaparlar.
+
+let opposites = [
+    "Mario": "Wario",
+    "Luigi": "Waluigi"
+]
+
+let peachOpposite = opposites["Peach"]
+
+/// That attempts to read the value attached to the key “Peach”, which doesn’t exist, so this can’t be a regular string. Swift’s solution is called optionals, which means data that might be present or might not.
+/// Bu, var olmayan "Peach" anahtarına bağlı değeri okumaya çalışır, bu nedenle bu normal bir string olamaz. Swift'in çözümü optionals olarak adlandırılır, yani mevcut olabilecek veya olmayabilecek veriler anlamına gelir.
+
+/// An optional string might have a string waiting inside for us, or there might be nothing at all – a special value called nil, that means “no value”. Any kind of data can be optional, including Int, Double, and Bool, as well as instances of enums, structs, and classes.
+/// Opsiyonel bir dizenin içinde bizi bekleyen bir string olabilir veya hiçbir şey olmayabilir - nil adı verilen ve "değer yok" anlamına gelen özel bir değer. Int, Double ve Bool'un yanı sıra enum, struct ve class örnekleri de dahil olmak üzere her türlü veri isteğe bağlı olabilir.
+
+/// Swift won’t let us use optional data directly, because it might be empty. That means we need to unwrap the optional to use it – we need to look inside to see if there’s a value, and, if there is, take it out and use it.
+/// Swift, opsiyonel veriyi doğrudan kullanmamıza izin vermez, çünkü boş olabilir. Bu, onu kullanmak için optional'ı açmamız gerektiği anlamına gelir - bir değer olup olmadığını görmek için içine bakmamız ve varsa, onu çıkarıp kullanmamız gerekir.
+
+/// Swift gives us several ways of unwrapping optionals, but the one you’ll see most looks like this:
+/// Swift bize opsiyonelleri açmak için çeşitli yollar sunar, ancak en çok göreceğiniz yol şuna benzer:
+
+if let marioOpposite = opposites["Mario"] {
+    print("Mario's opposite is \(marioOpposite)")
+}
+
+/// That reads the optional value from the dictionary, and if it has a string inside it gets unwrapped – the string inside gets placed into the marioOpposite constant, and isn’t optional any more. Because we were able to unwrap the optional, the condition is a success so the print() code is run.
+/// Bu, optional değerini sözlükten okur ve içinde bir dize varsa çözülür - içindeki dize marioOpposite sabitine yerleştirilir ve artık optional değildir. Opsiyonel değeri açabildiğimiz için koşul başarılı olur ve print() kodu çalıştırılır.
+
+
+// ****************************************************************************
+
+
+/// # Unwrapping optionals with guard
+
+/// Swift has a second way of unwrapping optionals, called guard let, which is very similar to if let except it flips things around: if let runs the code inside its braces if the optional had a value, and guard let runs the code if the optional didn’t have a value.
+/// Swift'in opsiyonelleri açmak için guard let adı verilen ikinci bir yolu vardır, bu da if let'e çok benzer, ancak işleri tersine çevirir: if let, opsiyonel bir değere sahipse parantez içindeki kodu çalıştırır ve guard let, opsiyonel bir değere sahip değilse kodu çalıştırır.
+
+func printSquare(of number: Int?) {
+    guard let number = number else {
+        print("Missing input")
+        return
+    }
+
+    print("\(number) x \(number) is \(number * number)")
+}
+
+/// If you use guard to check a function’s inputs are valid, Swift requires you to use return if the check fails. However, if the optional you’re unwrapping has a value inside, you can use it after the guard code finishes.
+/// Bir fonksiyonun girdilerinin geçerli olup olmadığını kontrol etmek için guard kullanırsanız, Swift kontrol başarısız olursa return kullanmanızı gerektirir. Ancak, açtığınız opsiyonun içinde bir değer varsa, guard kodu bittikten sonra bunu kullanabilirsiniz.
+
+/// Tip: You can use guard with any condition, including ones that don’t unwrap optionals.
+/// İpucu: guard'ı, opsiyonelleri açmayanlar da dahil olmak üzere herhangi bir koşulla kullanabilirsiniz.
+
+
+// ****************************************************************************
+
+
+/// # Nil coalescing
+
+
+
+
+
