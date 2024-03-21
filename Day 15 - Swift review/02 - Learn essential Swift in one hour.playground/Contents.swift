@@ -629,3 +629,314 @@ let sayHello = {
 sayHello()
 
 /// In that code, sayHello is a closure – a chunk of code we can pass around and call whenever we want. If you want the closure to accept parameters, they must be written inside the braces:
+/// Bu kodda sayHello bir closure'dur - istediğimiz zaman çağırabileceğimiz bir kod yığını. Eğer closure'un parametre almasını istiyorsanız, bu parametreler parantezlerin içine yazılmalıdır:
+
+let sayHello2 = { (name: String) -> String in
+    "Hi \(name)!"
+}
+
+/// The in is used to mark the end of the parameters and return type – everything after that is the body of the closure itself.
+/// in parametre ve dönüş tipinin sonunu işaretlemek için kullanılır - bundan sonraki her şey closure'ın gövdesidir.
+
+/// Closures are used extensively in Swift. For example, there’s an array method called filter() that runs all elements of the array through a test, and any that return true for the test get returned in a new array.
+/// Closure'lar Swift'te yaygın olarak kullanılır. Örneğin, dizinin tüm elemanlarını bir testten geçiren filter() adlı bir dizi yöntemi vardır ve test için true döndürenler yeni bir dizide döndürülür.
+
+/// We can provide that test using a closure, so we could filter an array to include only names that begin with T:
+/// Bu testi bir closure kullanarak sağlayabiliriz, böylece bir diziyi yalnızca T ile başlayan isimleri içerecek şekilde filtreleyebiliriz:
+
+let team = ["Gloria", "Suzanne", "Tiffany", "Tasha"]
+
+let onlyT = team.filter({ (name: String) -> Bool in
+    return name.hasPrefix("T")
+})
+
+/// Inside the closure we list the parameter filter() passes us, which is a string from the array. We also say that our closure returns a Boolean, then mark the start of the closure’s code by using in – after that, everything else is normal function code.
+/// Closure içinde filter() fonksiyonunun bize aktardığı parametreyi listeliyoruz, bu parametre diziden bir string. Ayrıca closure'ımızın bir Boolean döndürdüğünü söyleriz, ardından closure'ın kodunun başlangıcını in kullanarak işaretleriz - bundan sonra her şey normal fonksiyon kodudur.
+
+
+// ****************************************************************************
+
+
+/// # Trailing closures and shorthand syntax
+
+/// Swift has a few tricks up its sleeve to make closures easier to read. Here’s some code that filters an array to include only names beginning with “T”:
+/// Swift, closure'ların okunmasını kolaylaştırmak için birkaç hileye sahiptir. İşte bir diziyi yalnızca "T" ile başlayan isimleri içerecek şekilde filtreleyen bazı kodlar:
+
+let team2 = ["Gloria", "Suzanne", "Tiffany", "Tasha"]
+
+let onlyT2 = team.filter({ (name: String) -> Bool in
+    return name.hasPrefix("T")
+})
+
+print(onlyT)
+
+/// Immediately you can see that the body of the closure has just a single line of code, so we can remove return:
+/// closure'un gövdesinde yalnızca tek bir kod satırı olduğunu hemen görebilirsiniz, bu nedenle return'ü kaldırabiliriz:
+
+let onlyT3 = team.filter({ (name: String) -> Bool in
+    name.hasPrefix("T")
+})
+
+/// filter() must be given a function that accepts one item from its array, and returns true if it should be in the returned array.
+/// filter() işlevine, dizisinden bir öğe kabul eden ve döndürülen dizide olması gerekiyorsa true döndüren bir işlev verilmelidir.
+
+/// Because the function we pass in must behave like that, we don’t need to specify the types in our closure. So, we can rewrite the code to this:
+/// İçeri aktardığımız fonksiyonun bu şekilde davranması gerektiğinden, closure'umuzda türleri belirtmemize gerek yoktur. Böylece kodu şu şekilde yeniden yazabiliriz:
+
+let onlyT4 = team.filter({ name in
+    name.hasPrefix("T")
+})
+
+/// We can go further using special syntax called trailing closure syntax, which looks like this:
+/// trailing closure sözdizimi adı verilen ve aşağıdaki gibi görünen özel sözdizimini kullanarak daha da ileri gidebiliriz:
+
+let onlyT5 = team.filter { name in
+    name.hasPrefix("T")
+}
+
+/// Finally, Swift can provide short parameter names for us so we don’t even write name in any more, and instead rely on a specially named value provided for us: $0:
+/// Son olarak, Swift bizim için kısa parametre adları sağlayabilir, böylece artık ad bile yazmayız ve bunun yerine bizim için sağlanan özel olarak adlandırılmış bir değere güveniriz: $0:
+
+let onlyT6 = team.filter {
+    $0.hasPrefix("T")
+}
+
+
+// ****************************************************************************
+
+
+/// # Structs
+
+/// Structs let us create our own custom data types, complete with their own properties and methods:
+/// Yapılar, kendi özellikleri ve yöntemleriyle birlikte kendi özel veri türlerimizi oluşturmamızı sağlar:
+
+struct Album {
+    let title: String
+    let artist: String
+    var isReleased = true
+
+    func printSummary() {
+        print("\(title) by \(artist)")
+    }
+}
+
+let red = Album(title: "Red", artist: "Taylor Swift")
+print(red.title)
+red.printSummary()
+
+/// When we create instances of structs we do so using an initializer – Swift lets us treat our struct like a function, passing in parameters for each of its properties. It silently generates this memberwise initializer based on the struct’s properties.
+/// Yapıların örneklerini oluştururken bunu bir başlatıcı kullanarak yaparız - Swift, yapımızı bir fonksiyon gibi ele almamıza ve her bir özelliği için parametre girmemize izin verir. Bu üyeli başlatıcıyı sessizce struct'ın özelliklerine göre oluşturur.
+
+/// If you want to have a struct’s method change one of its properties, mark it as mutating:
+/// Bir struct'ın yönteminin özelliklerinden birini değiştirmesini istiyorsanız, bunu mutasyona uğrayan olarak işaretleyin:
+
+struct Album2 {
+    let title: String
+    let artist: String
+    var isReleased = true
+
+    func printSummary() {
+        print("\(title) by \(artist)")
+    }
+    
+    mutating func removeFromSale() {
+        isReleased = false
+    }
+}
+
+
+// ****************************************************************************
+
+
+/// # Computed properties
+
+/// A computed property calculates its value every time it’s accessed. For example, we could write an Employee struct that tracks how many days of vacation remained for that employee:
+/// Hesaplanan bir özellik, her erişildiğinde değerini hesaplar. Örneğin, bir çalışan için kaç gün tatil kaldığını takip eden bir Employee struct yazabiliriz:
+
+struct Employee {
+    let name: String
+    var vacationAllocated = 14
+    var vacationTaken = 0
+
+    var vacationRemaining: Int {
+        vacationAllocated - vacationTaken
+    }
+}
+
+/// To be able to write to vacationRemaining we need to provide both a getter and a setter:
+/// vacationRemaining'e yazabilmek için hem bir getter hem de bir setter sağlamamız gerekir:
+
+struct Employee2 {
+    let name: String
+    var vacationAllocated = 14
+    var vacationTaken = 0
+
+    var vacationRemaining: Int {
+        get {
+            vacationAllocated - vacationTaken
+        }
+
+        set {
+            vacationAllocated = vacationTaken + newValue
+        }
+    }
+}
+
+/// newValue is provided by Swift, and stores whatever value the user was assigning to the property.
+/// newValue Swift tarafından sağlanır ve kullanıcının özelliğe atadığı değeri saklar.
+
+
+// ****************************************************************************
+
+
+/// # Property observers
+
+/// Property observers are pieces of code that run when properties change: didSet runs when the property just changed, and willSet runs before the property changed.
+/// Özellik gözlemcileri özellikler değiştiğinde çalışan kod parçalarıdır: didSet özellik değiştiğinde, willSet ise özellik değişmeden önce çalışır.
+
+/// We could demonstrate didSet by making a Game struct print a message when the score changes:
+/// Skor değiştiğinde bir mesaj yazdıran bir Game struct yaparak didSet'i gösterebiliriz:
+
+struct Game {
+    var score = 0 {
+        didSet {
+            print("Score is now \(score)")
+        }
+    }
+}
+
+var game = Game()
+game.score += 10
+game.score -= 3
+
+
+// ****************************************************************************
+
+
+/// # Custom initializers
+
+/// Initializers are special functions that prepare a new struct instance to be used, ensuring all properties have an initial value.
+/// Başlatıcılar, kullanılacak yeni bir struct örneğini hazırlayan ve tüm özelliklerin bir başlangıç değerine sahip olmasını sağlayan özel işlevlerdir.
+
+/// Swift generates one based on the struct’s properties, but you can create your own:
+/// Swift, struct'ın özelliklerine göre bir tane oluşturur, ancak kendiniz de oluşturabilirsiniz:
+
+struct Player {
+    let name: String
+    let number: Int
+
+    init(name: String) {
+        self.name = name
+        number = Int.random(in: 1...99)
+    }
+}
+
+/// Important: Initializers don’t have func before them, and don’t explicitly return a value.
+/// Önemli: İlklendiricilerin önünde func yoktur ve açıkça bir değer döndürmezler.
+
+
+// ****************************************************************************
+
+
+/// # Access control
+
+/// Swift has several options for access control inside structs, but four are the most common:
+/// Swift'in yapılar içinde erişim kontrolü için çeşitli seçenekleri vardır, ancak en yaygın olanları dört tanedir:
+
+/// - Use private for “don’t let anything outside the struct use this.”
+/// - "Yapının dışında hiçbir şeyin bunu kullanmasına izin verme" için private kullanın.
+
+/// - Use private(set) for “anything outside the struct can read this, but don’t let them change it.”
+/// - "Yapının dışındaki herhangi bir şey bunu okuyabilir, ancak değiştirmelerine izin vermeyin" için private(set) kullanın.
+
+/// - Use fileprivate for “don’t let anything outside the current file use this.”
+/// - "Geçerli dosya dışında hiçbir şeyin bunu kullanmasına izin verme" için fileprivate kullanın.
+
+/// - Use public for “let anyone, anywhere use this.”
+/// - "Herkesin, her yerde bunu kullanmasına izin verin" için public kullanın.
+
+struct BankAccount {
+    private(set) var funds = 0
+
+    mutating func deposit(amount: Int) {
+        funds += amount
+    }
+
+    mutating func withdraw(amount: Int) -> Bool {
+        if funds > amount {
+            funds -= amount
+            return true
+        } else {
+            return false
+        }
+    }
+}
+
+/// Because we used private(set), reading funds from outside the struct is fine but writing isn’t possible.
+/// private(set) kullandığımız için, struct dışından fonları okumak sorun değil ancak yazmak mümkün değil.
+
+
+// ****************************************************************************
+
+
+/// # Static properties and methods
+
+/// Swift supports static properties and methods, allowing you to add a property or method directly to the struct itself rather than to one instance of the struct:
+/// Swift statik özellikleri ve yöntemleri destekleyerek bir özelliği veya yöntemi yapının bir örneği yerine doğrudan yapının kendisine eklemenize olanak tanır:
+
+struct AppData {
+    static let version = "1.3 beta 2"
+    static let settings = "settings.json"
+}
+
+/// Using this approach, everywhere we need to check or display something like the app’s version number we can read AppData.version.
+/// Bu yaklaşımı kullanarak, uygulamanın sürüm numarası gibi bir şeyi kontrol etmemiz veya görüntülememiz gereken her yerde AppData.version dosyasını okuyabiliriz.
+
+
+// ****************************************************************************
+
+
+/// # Classes
+
+/// Classes let us create custom data types, and are different from structs in five ways.
+/// Sınıflar özel veri türleri oluşturmamızı sağlar ve yapılardan beş şekilde farklıdır.
+
+/// The first difference is that we can create classes by inheriting functionality from other classes:
+/// İlk fark, diğer sınıflardan işlevsellik miras alarak sınıflar oluşturabilmemizdir:
+
+class Employee3 {
+    let hours: Int
+
+    init(hours: Int) {
+        self.hours = hours
+    }
+
+    func printSummary() {
+        print("I work \(hours) hours a day.")
+    }
+}
+
+class Developer: Employee3 {
+    func work() {
+        print("I'm coding for \(hours) hours.")
+    }
+}
+
+let novall = Developer(hours: 8)
+novall.work()
+novall.printSummary()
+
+/// If a child class wants to change a method from a parent class, it must use override:
+/// Bir alt sınıf bir üst sınıftaki bir yöntemi değiştirmek isterse, override kullanmalıdır:
+
+class Developer2: Employee3 {
+    func work() {
+        print("I'm coding for \(hours) hours.")
+    }
+    
+    override func printSummary() {
+        print("I spend \(hours) hours a day searching Stack Overflow.")
+    }
+}
+
+/// The second difference is that initializers are more tricky with classes. There’s a lot of complexity here, but there are three key points:
