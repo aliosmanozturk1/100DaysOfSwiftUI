@@ -51,7 +51,13 @@ struct ContentView: View {
                 }
                 
                 Section("Total amount for the check") {
-                    Text(totalPerPerson * Double(numberOfPeople + 2), format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    if tipPercentage == 0 {
+                        Text(totalPerPerson * Double(numberOfPeople + 2), format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                            .foregroundColor(.red)
+                    }
+                    else {
+                        Text(totalPerPerson * Double(numberOfPeople + 2), format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    }
                 }
             }
             .navigationTitle("WeSplit")
