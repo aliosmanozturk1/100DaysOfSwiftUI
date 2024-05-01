@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		79468DBB2BE2B5C500D4FD1E /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79468DBA2BE2B5C500D4FD1E /* SwiftUIView.swift */; };
 		794B88182BD7CEED0057DD46 /* GuessTheFlagApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 794B88172BD7CEED0057DD46 /* GuessTheFlagApp.swift */; };
 		794B881A2BD7CEED0057DD46 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 794B88192BD7CEED0057DD46 /* ContentView.swift */; };
 		794B881C2BD7CEEE0057DD46 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 794B881B2BD7CEEE0057DD46 /* Assets.xcassets */; };
@@ -14,6 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		79468DBA2BE2B5C500D4FD1E /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 		794B88142BD7CEED0057DD46 /* GuessTheFlag.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GuessTheFlag.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		794B88172BD7CEED0057DD46 /* GuessTheFlagApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuessTheFlagApp.swift; sourceTree = "<group>"; };
 		794B88192BD7CEED0057DD46 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -53,6 +55,7 @@
 			children = (
 				794B88172BD7CEED0057DD46 /* GuessTheFlagApp.swift */,
 				794B88192BD7CEED0057DD46 /* ContentView.swift */,
+				79468DBA2BE2B5C500D4FD1E /* SwiftUIView.swift */,
 				794B881B2BD7CEEE0057DD46 /* Assets.xcassets */,
 				794B881D2BD7CEEE0057DD46 /* Preview Content */,
 			);
@@ -141,6 +144,7 @@
 			files = (
 				794B881A2BD7CEED0057DD46 /* ContentView.swift in Sources */,
 				794B88182BD7CEED0057DD46 /* GuessTheFlagApp.swift in Sources */,
+				79468DBB2BE2B5C500D4FD1E /* SwiftUIView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
